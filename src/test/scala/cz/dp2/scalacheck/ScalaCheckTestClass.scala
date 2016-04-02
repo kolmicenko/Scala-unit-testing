@@ -26,7 +26,9 @@ object ScalaCheckTestClass extends Properties("String") with MockitoSugar with S
 
   val vectGen:Gen[Genre] = for {
     x <- Gen.choose(1, 1000)
+
     y <- Arbitrary.arbitrary[String]
+    //if !y.eq("")
   } yield Genre(x,y)
 
   property("startsWith") = forAll { (a: String, b: String) =>
@@ -35,7 +37,7 @@ object ScalaCheckTestClass extends Properties("String") with MockitoSugar with S
 
   property("ID and name are equal") = forAll (vectGen) { (genre: Genre) =>
     //genre = new Genre(a, b)
-    println(genre.id)
+    //println(genre.id)
     artist = new Artist("Jan", "Zpevak", Countries.Czech_Republic, Nil)
     track = new Track("1", "pisen", artist)
     album = new Album("albumPlnePisni", 2013, artist, genre)
@@ -50,39 +52,39 @@ object ScalaCheckTestClass extends Properties("String") with MockitoSugar with S
     albums.head.genre.id == genre.id && albums.head.genre.name == genre.name
   }
 
-  property("") = forAll { (a: Int, b: String) =>
-    //println(a)
-    genre = new Genre(a, b)
-    artist = new Artist("Jan", "Zpevak", Countries.Germany, Nil)
-    track = new Track("1", "pisen", artist)
-    album = new Album("albumPlnePisni", 2013, artist, genre)
-
-    // run system under test
-    albumControllerMock.addTrackToAlbum(track, album)
-    val albumMatcherObserver = new AlbumMatcherObserver(songDatabaseMock, albumControllerMock)
-    when(songDatabaseMock.getAlbumsByGenre(a)).thenReturn(List(album))
-//    when(songDatabaseMock.getAlbumsByGenre(a).head.genre.name == "").thenThrow(UnsupportedOperationException)
-    albumMatcherObserver.recordMatchResult(AlbumMatcher(track, album))
-    //var albums = Seq[Album]
-    val albums = songDatabaseMock.getAlbumsByGenre(a);
-
-    albums.head.genre.id == a && albums.head.genre.name == b
-  }
-
-  property("") = forAll { (a: Int, b: String) =>
-    genre = new Genre(a, b)
-    artist = new Artist("Jan", "Zpevak", Countries.Germany, Nil)
-    track = new Track("1", "pisen", artist)
-    album = new Album("albumPlnePisni", 2013, artist, genre)
-
-    // run system under test
-    val albumMatcherObserver = new AlbumMatcherObserver(songDatabaseMock, albumControllerMock)
-    when(songDatabaseMock.getAlbumsByGenre(a)).thenReturn(List(album))
-    albumMatcherObserver.recordMatchResult(AlbumMatcher(track, album))
-    var albums = List(album)
-    albums = songDatabaseMock.getAlbumsByGenre(a);
-
-    albums.head.genre.id == a && albums.head.genre.name == b
-  }
+//  property("") = forAll { (a: Int, b: String) =>
+//    //println(a)
+//    genre = new Genre(a, b)
+//    artist = new Artist("Jan", "Zpevak", Countries.Germany, Nil)
+//    track = new Track("1", "pisen", artist)
+//    album = new Album("albumPlnePisni", 2013, artist, genre)
+//
+//    // run system under test
+//    albumControllerMock.addTrackToAlbum(track, album)
+//    val albumMatcherObserver = new AlbumMatcherObserver(songDatabaseMock, albumControllerMock)
+//    when(songDatabaseMock.getAlbumsByGenre(a)).thenReturn(List(album))
+////    when(songDatabaseMock.getAlbumsByGenre(a).head.genre.name == "").thenThrow(UnsupportedOperationException)
+//    albumMatcherObserver.recordMatchResult(AlbumMatcher(track, album))
+//    //var albums = Seq[Album]
+//    val albums = songDatabaseMock.getAlbumsByGenre(a);
+//
+//    albums.head.genre.id == a && albums.head.genre.name == b
+//  }
+//
+//  property("") = forAll { (a: Int, b: String) =>
+//    genre = new Genre(a, b)
+//    artist = new Artist("Jan", "Zpevak", Countries.Germany, Nil)
+//    track = new Track("1", "pisen", artist)
+//    album = new Album("albumPlnePisni", 2013, artist, genre)
+//
+//    // run system under test
+//    val albumMatcherObserver = new AlbumMatcherObserver(songDatabaseMock, albumControllerMock)
+//    when(songDatabaseMock.getAlbumsByGenre(a)).thenReturn(List(album))
+//    albumMatcherObserver.recordMatchResult(AlbumMatcher(track, album))
+//    var albums = List(album)
+//    albums = songDatabaseMock.getAlbumsByGenre(a);
+//
+//    albums.head.genre.id == a && albums.head.genre.name == b
+//  }
 
 }
