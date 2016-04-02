@@ -1,15 +1,20 @@
 package cz.dp2.scalacheck
 
+import java.util.NoSuchElementException
+
 import cz.dp2._
+import org.joda.time.format.DateTimeFormatterBuilder.Fraction
 import org.scalacheck.Prop.forAll
 import org.scalacheck.{Arbitrary, Gen, Properties}
 import org.scalatest.mock.MockitoSugar
 import org.mockito.Mockito._
+import org.scalatest._
+import org.scalatest.prop.Tables.Table
 
 /**
   * Created by kolmicenko on 30. 1. 2016.
   */
-object ScalaCheckTestClass extends Properties("String") with MockitoSugar {
+object ScalaCheckTestClass extends Properties("String") with MockitoSugar with ShouldMatchers {
 
   var genre: Genre = _
   var artist: Artist = _
@@ -20,7 +25,7 @@ object ScalaCheckTestClass extends Properties("String") with MockitoSugar {
   val songDatabaseMock = mock[SongDatabase]
 
   val vectGen:Gen[Genre] = for {
-    x <- Gen.choose(-1000, 1000)
+    x <- Gen.choose(1, 1000)
     y <- Arbitrary.arbitrary[String]
   } yield Genre(x,y)
 
@@ -69,17 +74,6 @@ object ScalaCheckTestClass extends Properties("String") with MockitoSugar {
     artist = new Artist("Jan", "Zpevak", Countries.Germany, Nil)
     track = new Track("1", "pisen", artist)
     album = new Album("albumPlnePisni", 2013, artist, genre)
-
-    //when(songDatabaseMock.getTrackById("1")).thenReturn(track)
-    //val trackObj = songDatabaseMock.getTrackById(track.trackId)
-    //System.out.print(track.name)
-    //verify(songDatabaseMock).getTrackById(track.trackId).eq(trackObj)
-
-    // configure stubs
-    //(userDetailsServiceStub.getTrackById _) when track.trackId returns track
-    //val albumsReturn = List(album, album)
-    //(userDetailsServiceMock.getAlbumsByGenre _) when genre.id returns albumsReturn
-    //(userDetailsServiceStub.getTrackById _) when winner.id returns winner
 
     // run system under test
     val albumMatcherObserver = new AlbumMatcherObserver(songDatabaseMock, albumControllerMock)
