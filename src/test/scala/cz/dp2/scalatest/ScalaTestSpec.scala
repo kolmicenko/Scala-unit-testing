@@ -10,7 +10,7 @@ class ScalaTestSpec extends Spec {
     object `Kolekce Set` {
       object `pokud je prázdná` {
         def `má počet prvků 0` {
-          assert(Set.empty.size == 0)
+          assert(Set.empty.isEmpty)
         }
 
         def `pokud je zavolána metoda head na prázdnou kolekcí, volání skončí výjimkou NoSuchElementException` {

@@ -1,86 +1,50 @@
 package cz.dp2.mockito
 
-import java.util.NoSuchElementException
-
 import cz.dp2._
-import org.junit.{Before, Test}
-import org.mockito.Mockito.{verify, when}
-import org.scalatest.ShouldMatchers
+import org.junit.runner.RunWith
 import org.scalatest.mock.MockitoSugar
+import org.scalatest.FunSpec
+import org.mockito.Mockito.verify
+import org.mockito.Mockito.when
+import org.mockito.runners.MockitoJUnitRunner
+import org.specs2.runner.JUnitRunner
 
 /**
   * Created by kolmicenko on 30. 1. 2016.
   */
-class MockitoTestClass extends MockitoSugar with ShouldMatchers {
+class MockitoTestClass extends FunSpec with MockitoSugar {
 
-  var genre: Genre = _
-  var genre2: Genre = _
-  var artist: Artist = _
-  var track: Track = _
-  var album: Album = _
-  var albumWithoutGenre: Album = _
+  val genre = new Genre(1, "Rock")
+
+  val artist = new Artist("Jan", "Zpevak", Countries.Germany, Nil)
+
+  val track = new Track("1", "pisen", artist)
+
+  val album = new Album("albumPlnePisni", 2013, artist, genre)
 
   val albumControllerMock = mock[AlbumController]
   val songDatabaseMock = mock[SongDatabase]
 
-  @Before
-  def beforeMethod: Unit = {
-    genre = new Genre(1, "Rock")
-    genre2 = new Genre(2, "")
+  // set expectations
+  albumControllerMock.addTrackToAlbum(track, album)
+  //(countryLeaderBoardMock.addTrackToAlbum _).expects(track, album)
 
-    artist = new Artist("Jan", "Zpevak", Countries.Germany, Nil)
+  when(songDatabaseMock.getTrackById("1")).thenReturn(track)
+  val trackObj = songDatabaseMock.getTrackById(track.trackId)
+  System.out.print(track.name)
+  verify(songDatabaseMock).getTrackById(track.trackId).eq(trackObj)
+  // configure stubs
+  //(userDetailsServiceStub.getTrackById _) when track.trackId returns track
+  //val albumsReturn = List(album, album)
+  //(userDetailsServiceMock.getAlbumsByGenre _) when genre.id returns albumsReturn
+  //(userDetailsServiceStub.getTrackById _) when winner.id returns winner
 
-    track = new Track("1", "pisen", artist)
+  // run system under test
+  val albumMatcherObserver = new AlbumMatcherObserver(songDatabaseMock, albumControllerMock)
+  when(songDatabaseMock.getAlbumsByGenre(1)).thenReturn(List(album))
+  albumMatcherObserver.recordMatchResult(AlbumMatcher(track, album))
 
-    album = new Album("albumPlnePisni", 2013, artist, genre)
-    albumWithoutGenre = new Album("Album bez zanru", 2001, artist, genre2)
+  val albums = songDatabaseMock.getAlbumsByGenre(1)
 
-  }
-
-  @Test
-  def testMockitoTrackObject: Unit = {
-    // set expectations
-    albumControllerMock.addTrackToAlbum(track, album)
-
-    when(songDatabaseMock.getTrackById("1")).thenReturn(track)
-    val trackObj = songDatabaseMock.getTrackById(track.trackId)
-    System.out.print(track.name)
-    verify(songDatabaseMock).getTrackById(track.trackId).eq(trackObj)
-  }
-
-  @Test
-  def testMockitoAlbums: Unit = {
-
-    val albumMatcherObserver = new AlbumMatcherObserver(songDatabaseMock, albumControllerMock)
-    when(songDatabaseMock.getAlbumsByGenre(1)).thenReturn(List(album))
-    when(songDatabaseMock.getAlbumsByGenre(2)).thenThrow(new NoSuchElementException)
-    albumMatcherObserver.recordMatchResult(AlbumMatcher(track, album))
-    val albums = songDatabaseMock.getAlbumsByGenre(1);
-
-    verify(songDatabaseMock).getAlbumsByGenre(1).eq(albums)
-  }
-
-  @Test
-  def testMockitoCatchException1: Unit = {
-    when(songDatabaseMock.getAlbumsByGenre(2)).thenThrow(new NoSuchElementException)
-    //intercept[NoSuchElementException] {songDatabaseMock.getAlbumsByGenre(2)}
-    try {
-      songDatabaseMock.getAlbumsByGenre(2)
-    } catch {
-      case e: NoSuchElementException => {
-        println("jak ocekvana")
-      }
-    }
-  }
-
-  @Test
-  def testMockitoCatchException2: Unit = {
-    when(songDatabaseMock.getAlbumsByGenre(2)).thenThrow(new NoSuchElementException)
-
-    the[NoSuchElementException] thrownBy {
-      songDatabaseMock.getAlbumsByGenre(2)
-    }
-
-  }
-
+  verify(songDatabaseMock).getAlbumsByGenre(1).eq(albums)
 }

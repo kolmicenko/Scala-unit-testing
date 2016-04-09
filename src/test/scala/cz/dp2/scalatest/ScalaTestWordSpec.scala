@@ -10,7 +10,7 @@ class ScalaTestWordSpec extends WordSpec {
   "A Set" when {
     "empty" should {
       "have size 0" in {
-        assert(Set.empty.size == 0)
+        assert(Set.empty.isEmpty)
       }
 
       "produce NoSuchElementException when head is invoked" in {
